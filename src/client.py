@@ -8,7 +8,7 @@ from problem import Problem
 from messages import Message, Message_Code, String_Message, Problem_Message
 
 HEADER = 64
-PORT = 5060
+PORT = 5066
 SERVER = "35.11.206.210"
 FORMAT = "utf-8"
 
@@ -35,10 +35,16 @@ class Connection:
         connected = True
         while connected:
             msg_length = self.client.recv(HEADER).decode(FORMAT)
+            print(msg_length)
             if msg_length:
                 msg_length = int(msg_length)
-                msg = self.client.recv(msg_length)
-                msg = pickle.loads(msg)
+                msg = self.client.recv(msg_length*2)
+                try:
+                    msg = pickle.loads(msg)
+                except:
+                    print("Error")
+                    self.send(String_Message("Error"))
+                    continue
                 if msg.msg_type == Message_Code.STRING:
                     print(msg.get_msg())
                 elif msg.msg_type == Message_Code.PROBLEM:

@@ -26,6 +26,14 @@ class String_Message(Message):
     def get_msg(self) -> str:
         return self.msg
 
+class Error_Message(Message):
+    def __init__(self, msg: str) -> None:
+        super().__init__(Message_Code.STRING)
+        self.msg = msg
+
+    def get_msg(self) -> str:
+        return self.msg
+
 class Disconnect_Message(Message):
     def __init__(self) -> None:
         super().__init__(Message_Code.DISCONNECT)

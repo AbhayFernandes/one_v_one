@@ -1,5 +1,6 @@
 import socket
 import urwid
+import time
 import threading
 from enum import Enum
 import pickle
@@ -49,8 +50,11 @@ class Server:
         msg_len = str(msg_len).encode(self.FORMAT)
         msg_len += b' ' * (self.HEADER - len(msg_len))
         for client in self.clients:
-            client.get_conn().send(msg_len)
-            client.get_conn().send(msg)
+            # keep sending until the client has recieved the message
+            while not client.error:
+                client.get_conn().send(msg_len)
+                client.get_conn().send(msg)
+                time.sleep(0.1)
 
 
 class Client:
@@ -80,6 +84,9 @@ class Client:
                     print(f"[{addr}] [STRING] {message.get_msg()}")
                 elif message.msg_type == Message_Code.PROBLEM:
                     print(f"[{addr}] [PROBLEM] {message}")
+                elif message.msg_type == Message_Code.ERROR:
+                    print(f"[{addr}] [ERROR] {message.get_msg()}")
+                    self.error = True
                 else:
                     continue
 
